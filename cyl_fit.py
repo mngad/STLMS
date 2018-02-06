@@ -1,4 +1,4 @@
-from stl import mesh
+import stl_uniq as su
 from mpl_toolkits import mplot3d
 from matplotlib import pyplot
 import numpy as np
@@ -7,13 +7,6 @@ import os
 import sys
 
 
-def open_concat_stl(fname):
-    #return unique point cloud taking points from each triangle
-
-    vbmesh = mesh.Mesh.from_file(fname)
-    allvbmesh = np.concatenate((vbmesh.v0, vbmesh.v1, vbmesh.v2), axis=0)
-    vbmesh_un = np.unique(allvbmesh, axis=0)
-    return vbmesh_un
 
 def measure_vb(vbmesh_un, filename):
 
@@ -127,6 +120,10 @@ def plot(midarray, centreX, centreY, mid, x, y, z, fname):
 
 def get_volume(a, b, h, fname):
     print(fname + ", " + str(np.pi * a * b * h))
+
+    with open("cyl_fit.txt", "a") as myfile:
+        myfile.write(fname + ", " + str(np.pi * a * b * h) + "\n")
+
     return np.pi * a * b * h
 
 
@@ -135,7 +132,7 @@ if __name__ == "__main__":
     for filename in sorted(os.listdir(sys.argv[1])):
         if filename.endswith(".stl"):
 
-            vbmesh_un = open_concat_stl(filename)
+            vbmesh_un = su.get_uniq_pc(filename)
             midarray, centreX, centreY, mid, x, y, z = measure_vb(
                 vbmesh_un, filename[:-4])
             plot(midarray, centreX, centreY, mid, x, y, z, filename[:-4])
