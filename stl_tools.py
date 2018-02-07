@@ -15,7 +15,7 @@ def get_mid_array(mesh_uniq, thickness, axis):
 
     if axis == 'x' or axis == 'X':
         axisnum = 0
-    if axis == 'x' or axis == 'X':
+    if axis == 'y' or axis == 'Y':
         axisnum = 1
     if axis == 'z' or axis == 'Z':
         axisnum = 2
@@ -27,7 +27,6 @@ def get_mid_array(mesh_uniq, thickness, axis):
     for i in range(len(mesh_uniq)):
         if (mesh_uniq[i, axisnum] <= mid + (thickness / 2)
                 and mesh_uniq[i, axisnum] >= mid - (thickness / 2)):
-            #print(mesh_uniq[i])
             count += 1
 
     midarray = np.zeros((count, 3))
@@ -35,7 +34,6 @@ def get_mid_array(mesh_uniq, thickness, axis):
     for i in range(len(mesh_uniq)):
         if (mesh_uniq[i, axisnum] <= mid + (thickness / 2)
                 and mesh_uniq[i, axisnum] >= mid - (thickness / 2)):
-            #print(mesh_uniq[i])
             midarray[a] = mesh_uniq[i]
             a += 1
 
