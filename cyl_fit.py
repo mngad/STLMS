@@ -1,4 +1,4 @@
-import stl_uniq as su
+import stl_tools as su
 from mpl_toolkits import mplot3d
 from matplotlib import pyplot
 import numpy as np
@@ -10,23 +10,7 @@ import sys
 
 def measure_vb(vbmesh_un, filename):
 
-    zmin = min(vbmesh_un[:, 2])
-    zmax = max(vbmesh_un[:, 2])
-    mid = (zmax - zmin) / 2 + zmin
-    count = 0
-    for i in range(len(vbmesh_un)):
-        if (vbmesh_un[i, 2] <= mid + 0.5 and vbmesh_un[i, 2] >= mid - 0.5):
-            #print(vbmesh_un[i])
-            count += 1
-
-    midarray = np.zeros((count, 3))
-    a = 0
-    for i in range(len(vbmesh_un)):
-        if (vbmesh_un[i, 2] <= mid + 0.5 and vbmesh_un[i, 2] >= mid - 0.5):
-            #print(vbmesh_un[i])
-            midarray[a] = vbmesh_un[i]
-            a += 1
-
+    midarray = su.get_mid_array(vbmesh_un, 1, 'z')
     midxmin = min(midarray[:, 0])
     midxmax = max(midarray[:, 0])
     midymin = min(midarray[:, 1])
