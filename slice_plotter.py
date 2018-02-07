@@ -3,12 +3,6 @@ import sys
 import stl_tools as su
 import matplotlib.pyplot as plt
 
-def plot_slice(pointarray):
-    fig = plt.figure(1)
-    plt.subplot(331)
-    plt.scatter(pointarray[:,0],pointarray[:,1])
-    plt.show()
-
 if __name__ == "__main__":
     os.chdir(sys.argv[1])
     PCName = ''
