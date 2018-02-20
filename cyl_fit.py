@@ -8,13 +8,19 @@ import sys
 
 
 
-def measure_vb(vbmesh_un, filename):
+def measure_vb(vbmesh_un, folder, filename):
 
     midarray = su.get_mid_array(vbmesh_un, 1, 'z')
     midxmin = min(midarray[:, 0])
     midxmax = max(midarray[:, 0])
     midymin = min(midarray[:, 1])
     midymax = max(midarray[:, 1])
+    zmax = max(vbmesh_un[:, 2])
+    zmin = min(vbmesh_un[:, 2])
+    midz = midarray[0,2]
+    # print(midz)
+    # print(zmin)
+    # print(zmax)
     centreX = (midxmax - midxmin) / 2 + midxmin
 
     for i in range(len(midarray)):
@@ -41,7 +47,7 @@ def measure_vb(vbmesh_un, filename):
     currsmallest = zmax
     currsmallestind = 0
     for i in range(len(vbmesh_un)):
-        if (vbmesh_un[i, 2] > mid and vbmesh_un[i, 1] <= centreY + 8 and
+        if (vbmesh_un[i, 2] > midz and vbmesh_un[i, 1] <= centreY + 8 and
                 vbmesh_un[i, 1] >= centreY - 8 and
                 vbmesh_un[i, 0] <= centreX + 8 and
                 vbmesh_un[i, 0] >= centreX - 8):
@@ -54,7 +60,7 @@ def measure_vb(vbmesh_un, filename):
     currsmallest = zmin
     currsmallestind = 0
     for i in range(len(vbmesh_un)):
-        if (vbmesh_un[i, 2] < mid and vbmesh_un[i, 1] <= centreY + 8 and
+        if (vbmesh_un[i, 2] < midz and vbmesh_un[i, 1] <= centreY + 8 and
                 vbmesh_un[i, 1] >= centreY - 8 and
                 vbmesh_un[i, 0] <= centreX + 8 and
                 vbmesh_un[i, 0] >= centreX - 8):
@@ -69,11 +75,11 @@ def measure_vb(vbmesh_un, filename):
     z = np.linspace(bottomInternal, topInternal, 50)
     x, z = np.meshgrid(x, z)
     y = b * np.sin(np.linspace(0, -np.pi * 2.0, 50)) + centreY
-    get_volume(a, b, topInternal - bottomInternal, filename)
-    return midarray, centreX, centreY, mid, x, y, z
+    get_volume(a, b, topInternal - bottomInternal, folder, filename)
+    return midarray, centreX, centreY, midz, x, y, z
 
 
-def plot(midarray, centreX, centreY, mid, x, y, z, fname):
+def plot(midarray, centreX, centreY, mid, x, y, z, folder, fname):
 
     fig = pyplot.figure()
     ax = fig.add_subplot(111, projection='3d')
@@ -90,22 +96,22 @@ def plot(midarray, centreX, centreY, mid, x, y, z, fname):
     ax.set_zlabel('Z axis')
     # rotate the axes and update
     ax.view_init(0, 0)
-    pyplot.savefig(fname + '_0_0.eps')
-    pyplot.savefig(fname + '_0_0.png')
+    pyplot.savefig(folder + "/" + fname + '_0_0.eps')
+    pyplot.savefig(folder + "/" + fname + '_0_0.png')
 
     ax.view_init(0, 90)
-    pyplot.savefig(fname + '_0_90.eps')
-    pyplot.savefig(fname + '_0_90.png')
+    pyplot.savefig(folder + "/" + fname + '_0_90.eps')
+    pyplot.savefig(folder + "/" + fname + '_0_90.png')
 
     ax.view_init(90, 0)
-    pyplot.savefig(fname + '_90_0.eps')
-    pyplot.savefig(fname + '_90_0.png')
+    pyplot.savefig(folder + "/" + fname + '_90_0.eps')
+    pyplot.savefig(folder + "/" + fname + '_90_0.png')
 
 
-def get_volume(a, b, h, fname):
+def get_volume(a, b, h, folder, fname):
     print(fname + ", " + str(np.pi * a * b * h))
 
-    with open("cyl_fit.txt", "a") as myfile:
+    with open(folder + "/" + "cyl_fit.txt", "a") as myfile:
         myfile.write(fname + ", " + str(np.pi * a * b * h) + "\n")
 
     return np.pi * a * b * h
@@ -113,10 +119,13 @@ def get_volume(a, b, h, fname):
 
 if __name__ == "__main__":
     os.chdir(sys.argv[1])
+    folder = "Cyl_fit"
+    if folder not in os.listdir(sys.argv[1]):
+        os.mkdir(sys.argv[1] + "/" + folder)
     for filename in sorted(os.listdir(sys.argv[1])):
         if filename.endswith(".stl"):
 
             vbmesh_un = su.get_uniq_pc(filename)
             midarray, centreX, centreY, mid, x, y, z = measure_vb(
-                vbmesh_un, filename[:-4])
-            plot(midarray, centreX, centreY, mid, x, y, z, filename[:-4])
+                vbmesh_un, folder, filename[:-4])
+            plot(midarray, centreX, centreY, mid, x, y, z, folder, filename[:-4])
