@@ -20,9 +20,12 @@ def get_mid_array(mesh_uniq, thickness, axis):
     if axis == 'z' or axis == 'Z':
         axisnum = 2
 
+
     zmin = min(mesh_uniq[:, axisnum])
     zmax = max(mesh_uniq[:, axisnum])
     mid = (zmax - zmin) / 2 + zmin
+    if(thickness == "all"):
+        thickness = zmax
     count = 0
     for i in range(len(mesh_uniq)):
         if (mesh_uniq[i, axisnum] <= mid + (thickness / 2)
