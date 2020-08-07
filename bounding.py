@@ -31,7 +31,7 @@ def plotCubeAt2(positions,sizes=None,colors=None, **kwargs):
     return Poly3DCollection(np.concatenate(g),
                             facecolors=np.repeat(colors,6), alpha=0.2, **kwargs)
 
-def plot(vbmesh_un, fname, folder):
+def plot(mesh_un, fname, folder):
 
     fig = pyplot.figure()
     ax = fig.add_subplot(111, projection='3d')
@@ -40,7 +40,7 @@ def plot(vbmesh_un, fname, folder):
     #ax.plot_surface(x, y, z, linewidth=1, color='red', alpha=0.7)
 
 
-    ax.scatter(vbmesh_un[:, 0], vbmesh_un[:, 1], vbmesh_un[:, 2], s=1)
+    ax.scatter(mesh_un[:, 0], mesh_un[:, 1], mesh_un[:, 2], s=1)
     #ax.scatter(centreX, centreY, mid, s=5, c='g')
 
     ax.set_xlabel('X axis')
@@ -51,12 +51,22 @@ def plot(vbmesh_un, fname, folder):
     # positions = [(-3,5,-2),(1,7,1)]
     # sizes = [(4,5,3), (3,3,7)]
     # colors = ["crimson","limegreen"]
+    mesh_left_half = su.get_half_points(mesh_un, 0, su.get_extent(mesh_un, 0), 0)
+    mesh_right_half = su.get_half_points(mesh_un, 1, su.get_extent(mesh_un,0), 0)
 
-    positions = su.boundingorigin(vbmesh_un)
-    sizes = su.boundingsize(vbmesh_un)
+    positions = [
+        # su.boundingorigin(mesh_un),
+        su.boundingorigin(mesh_left_half),
+        su.boundingorigin(mesh_right_half)
+        ]
+    sizes = [
+        # su.boundingsize(mesh_un),
+        su.boundingsize(mesh_left_half),
+        su.boundingsize(mesh_right_half)
+        ]
     print("positions = " + str(positions))
     print("sizes = " + str(sizes))
-    colors = ["crimson"]
+    colors = ["crimson", "green"]
     pc = plotCubeAt2(positions,sizes,colors=colors, edgecolor="k")
     ax.add_collection3d(pc)
 
@@ -84,5 +94,5 @@ if __name__ == "__main__":
         os.mkdir(sys.argv[1] + "/" + folder)
     for filename in sorted(os.listdir(sys.argv[1])):
         if filename.endswith(".stl"):
-            vbmesh_un = su.get_uniq_pc(filename)
-            plot(vbmesh_un, filename, folder)
+            mesh_un = su.get_uniq_pc(filename)
+            plot(mesh_un, filename, folder)

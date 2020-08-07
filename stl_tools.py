@@ -5,9 +5,9 @@ import numpy as np
 def get_uniq_pc(fname):
     #return unique point cloud taking points from each triangle
 
-    vbmesh = mesh.Mesh.from_file(fname)
-    allvbmesh = np.concatenate((vbmesh.v0, vbmesh.v1, vbmesh.v2), axis=0)
-    mesh_uniq = np.unique(allvbmesh, axis=0)
+    fullmesh = mesh.Mesh.from_file(fname)
+    allmesh = np.concatenate((fullmesh.v0, fullmesh.v1, fullmesh.v2), axis=0)
+    mesh_uniq = np.unique(allmesh, axis=0)
     return mesh_uniq
 
 
@@ -45,8 +45,8 @@ def get_mid_array(mesh_uniq, thickness, axis):
 #reurns a list of 2 values, minimum and maximum of an axis
 def get_extent(mesh_uniq, axis):
     extent = []
-    extent.append(mesh_uniq[0,axis])
-    extent.append(mesh_uniq[0,axis])
+    extent.append(mesh_uniq[0, axis])
+    extent.append(mesh_uniq[0, axis])
 
 
     for i in range(len(mesh_uniq)):
@@ -56,21 +56,55 @@ def get_extent(mesh_uniq, axis):
     return extent
 
 #returns origin of cube
-def boundingorigin(vbmesh_un):
+def boundingorigin(mesh_un):
 
-    origin = [(get_extent(vbmesh_un, 0)[0],
-        get_extent(vbmesh_un, 1)[0],
-        get_extent(vbmesh_un, 2)[0])]
+    origin = (get_extent(mesh_un, 0)[0],
+        get_extent(mesh_un, 1)[0],
+        get_extent(mesh_un, 2)[0])
 
     return origin
 
-def boundingsize(vbmesh_un):
-    origin = [(get_extent(vbmesh_un, 0)[0],
-        get_extent(vbmesh_un, 1)[0],
-        get_extent(vbmesh_un, 2)[0])]
+def boundingsize(mesh_un):
+    origin = (get_extent(mesh_un, 0)[0],
+        get_extent(mesh_un, 1)[0],
+        get_extent(mesh_un, 2)[0])
 
-    size = [(get_extent(vbmesh_un, 0)[1] - origin[0][0],
-        get_extent(vbmesh_un, 1)[1] - origin[0][1],
-        get_extent(vbmesh_un, 2)[1] - origin[0][2])]
+    size = (get_extent(mesh_un, 0)[1] - origin[0],
+        get_extent(mesh_un, 1)[1] - origin[1],
+        get_extent(mesh_un, 2)[1] - origin[2])
 
     return size
+
+#returns mesh points from left or right half
+# which_half = bool of 0 = left, 1 = right
+def get_half_points(mesh_uniq, which_half, extent, axis):
+
+
+    halfway_val = (extent[1] + extent[0]) / 2
+
+    a = 0
+
+    for i in range(len(mesh_uniq)):
+        if(which_half == 0):
+            if(mesh_uniq[i, axis] < halfway_val):
+                a += 1
+        else:
+            if(mesh_uniq[i, axis] > halfway_val):
+                a += 1
+
+    half_mesh_array = np.zeros((a, 3))
+
+    count = 0
+    for i in range(len(mesh_uniq)):
+        # print("a = " + str(a) + ", i = " + str(i))
+        if(which_half == 0):
+            if(mesh_uniq[i, axis] < halfway_val):
+                half_mesh_array[count] = mesh_uniq[i]
+                count += 1
+        else:
+            if(mesh_uniq[i, axis] > halfway_val):
+                half_mesh_array[count] = mesh_uniq[i]
+                count += 1
+
+
+    return half_mesh_array
