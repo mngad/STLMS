@@ -41,3 +41,36 @@ def get_mid_array(mesh_uniq, thickness, axis):
             a += 1
 
     return midarray
+
+#reurns a list of 2 values, minimum and maximum of an axis
+def get_extent(mesh_uniq, axis):
+    extent = []
+    extent.append(mesh_uniq[0,axis])
+    extent.append(mesh_uniq[0,axis])
+
+
+    for i in range(len(mesh_uniq)):
+        if ( mesh_uniq[i,axis] < extent[0]): extent[0] = mesh_uniq[i,axis]
+        if ( mesh_uniq[i,axis] > extent[1]): extent[1] = mesh_uniq[i,axis]
+
+    return extent
+
+#returns origin of cube
+def boundingorigin(vbmesh_un):
+
+    origin = [(get_extent(vbmesh_un, 0)[0],
+        get_extent(vbmesh_un, 1)[0],
+        get_extent(vbmesh_un, 2)[0])]
+
+    return origin
+
+def boundingsize(vbmesh_un):
+    origin = [(get_extent(vbmesh_un, 0)[0],
+        get_extent(vbmesh_un, 1)[0],
+        get_extent(vbmesh_un, 2)[0])]
+
+    size = [(get_extent(vbmesh_un, 0)[1] - origin[0][0],
+        get_extent(vbmesh_un, 1)[1] - origin[0][1],
+        get_extent(vbmesh_un, 2)[1] - origin[0][2])]
+
+    return size
