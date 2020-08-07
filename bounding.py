@@ -70,7 +70,7 @@ def plot(mesh_un, fname, folder):
     pc = plotCubeAt2(positions,sizes,colors=colors, edgecolor="k")
     ax.add_collection3d(pc)
 
-
+    pyplot.savefig(folder + "/" + fname + '_persp.png')
     ax.view_init(0, 0)
     # pyplot.show()
     pyplot.savefig(folder + "/" + fname + '_0_0.png')
