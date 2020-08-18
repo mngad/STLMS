@@ -1,8 +1,6 @@
 import stl_tools as su
-# from mpl_toolkits import mplot3d
 from matplotlib import pyplot
 import numpy as np
-# from mpl_toolkits.mplot3d import Axes3D
 import os
 import sys
 
