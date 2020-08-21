@@ -218,3 +218,61 @@ def get_condyle(mesh_uniq, extent_y, half):
                 count += 1
 
         return FW_mesh_array
+
+
+def split_into_thirds(mesh, axis):
+    # Split mesh into thirds along a specific axis
+
+    mesh_extent = get_extent(mesh, axis)
+    mesh_third = abs(mesh_extent[1] - mesh_extent[0]) / 3
+    b = 0
+    for i in range(len(mesh)):
+        if(mesh[i, axis] < mesh_extent[0] + mesh_third):
+            b += 1
+
+    mesh_array_one = np.zeros((b, 3))
+
+    count = 0
+    for i in range(len(mesh)):
+        if(mesh[i, axis] < mesh_extent[0] + mesh_third):
+            mesh_array_one[count] = mesh[i]
+            count += 1
+
+    b = 0
+    for i in range(len(mesh)):
+        if(mesh[i, axis] < mesh_extent[0] + (mesh_third*2) and
+           mesh[i, axis] > mesh_extent[0] + (mesh_third * 1)):
+            b += 1
+
+    mesh_array_two = np.zeros((b, 3))
+
+    count = 0
+    for i in range(len(mesh)):
+        if(mesh[i, axis] < mesh_extent[0] + (mesh_third * 2) and
+           mesh[i, axis] > mesh_extent[0] + (mesh_third * 1)):
+            mesh_array_two[count] = mesh[i]
+            count += 1
+
+    b = 0
+    for i in range(len(mesh)):
+        if(mesh[i, axis] < mesh_extent[0] + (mesh_third * 3) and
+           mesh[i, axis] > mesh_extent[0] + (mesh_third * 2)):
+            b += 1
+
+    mesh_array_three = np.zeros((b, 3))
+
+    count = 0
+    for i in range(len(mesh)):
+        if(mesh[i, axis] < mesh_extent[0] + (mesh_third * 3) and
+           mesh[i, axis] > mesh_extent[0] + (mesh_third * 2)):
+            mesh_array_three[count] = mesh[i]
+            count += 1
+
+    mesharray_thirds = []
+    mesharray_thirds.append(mesh_array_one)
+    mesharray_thirds.append(mesh_array_two)
+    mesharray_thirds.append(mesh_array_three)
+
+    return mesharray_thirds
+
+

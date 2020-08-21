@@ -39,12 +39,8 @@ def plot(mesh_un, fname, folder):
 
     fig = pyplot.figure()
     ax = fig.add_subplot(111, projection='3d')
-    # = elliptical cylinder about z-axis 1
-
-    # ax.plot_surface(x, y, z, linewidth=1, color='red', alpha=0.7)
 
     ax.scatter(mesh_un[:, 0], mesh_un[:, 1], mesh_un[:, 2], s=1)
-    # ax.scatter(centreX, centreY, mid, s=5, c='g')
 
     ax.set_xlabel('X axis')
     ax.set_ylabel('Y axis')
@@ -65,24 +61,70 @@ def plot(mesh_un, fname, folder):
     mesh_left_cond = su.get_condyle(mesh_left_half,
                                     su.get_extent(mesh_left_half, 1),
                                     1)
+
+    mesh_left_cond_thirds = su.split_into_thirds(
+        mesh_left_cond, 1)
+    mesh_right_cond_thirds = su.split_into_thirds(
+        mesh_right_cond, 1)
+    mesh_left_cond_thirds_x = su.split_into_thirds(
+        mesh_left_cond, 0)
+    mesh_right_cond_thirds_x = su.split_into_thirds(
+        mesh_right_cond, 0)
+    mesh_un_thirds = su.split_into_thirds(mesh_un, 1)
+
     positions = [
         # su.boundingorigin(mesh_un),
-        su.boundingorigin(mesh_left_half),
-        su.boundingorigin(mesh_right_half),
-        su.boundingorigin(mesh_right_cond),
-        su.boundingorigin(mesh_left_cond)
-
+        # su.boundingorigin(mesh_left_half),
+        # su.boundingorigin(mesh_right_half),
+        # su.boundingorigin(mesh_right_cond),
+        # su.boundingorigin(mesh_left_cond),
+        # su.boundingorigin(mesh_left_cond_thirds[0]),
+        # su.boundingorigin(mesh_left_cond_thirds[1]),
+        # su.boundingorigin(mesh_left_cond_thirds[2]),
+        # su.boundingorigin(mesh_right_cond_thirds[0]),
+        # su.boundingorigin(mesh_right_cond_thirds[1]),
+        # su.boundingorigin(mesh_right_cond_thirds[2]),
+        su.boundingorigin(mesh_left_cond_thirds_x[0]),
+        su.boundingorigin(mesh_left_cond_thirds_x[1]),
+        su.boundingorigin(mesh_left_cond_thirds_x[2]),
+        su.boundingorigin(mesh_right_cond_thirds_x[0]),
+        su.boundingorigin(mesh_right_cond_thirds_x[1]),
+        su.boundingorigin(mesh_right_cond_thirds_x[2])
     ]
     sizes = [
         # su.boundingsize(mesh_un),
-        su.boundingsize(mesh_left_half),
-        su.boundingsize(mesh_right_half),
-        su.boundingsize(mesh_right_cond),
-        su.boundingsize(mesh_left_cond)
+        # su.boundingsize(mesh_left_half),
+        # su.boundingsize(mesh_right_half),
+        # su.boundingsize(mesh_right_cond),
+        # su.boundingsize(mesh_left_cond),
+        # su.boundingsize(mesh_left_cond_thirds[0]),
+        # su.boundingsize(mesh_left_cond_thirds[1]),
+        # su.boundingsize(mesh_left_cond_thirds[2]),
+        # su.boundingsize(mesh_right_cond_thirds[0]),
+        # su.boundingsize(mesh_right_cond_thirds[1]),
+        # su.boundingsize(mesh_right_cond_thirds[2]),
+        su.boundingsize(mesh_left_cond_thirds_x[0]),
+        su.boundingsize(mesh_left_cond_thirds_x[1]),
+        su.boundingsize(mesh_left_cond_thirds_x[2]),
+        su.boundingsize(mesh_right_cond_thirds_x[0]),
+        su.boundingsize(mesh_right_cond_thirds_x[1]),
+        su.boundingsize(mesh_right_cond_thirds_x[2])
+
     ]
+
+    get_measurements(mesh_un, "FCW", 0)
+    get_measurements(mesh_un_thirds[2], "FCWA", 0)
+    get_measurements(mesh_un_thirds[0], "FCWP", 0)
+    get_measurements(mesh_right_cond_thirds[1], "FW", 0)
+    get_measurements(mesh_right_cond_thirds[2], "FWA", 0)
+    get_measurements(mesh_right_cond_thirds[0], "FWP", 0)
+    get_measurements(mesh_right_cond_thirds_x[1], "FL", 1)
+    get_measurements(mesh_right_cond_thirds_x[2], "FLM", 1)
+    get_measurements(mesh_right_cond_thirds_x[0], "FLL", 1)
+
     # print("positions = " + str(positions))
     # print("sizes = " + str(sizes))
-    colors = ["crimson", "green", "red", "blue"]
+    colors = ["crimson", "green", "red", "blue", "yellow", "purple", "orange"]
     pc = plotCubeAt2(positions, sizes, colors=colors, edgecolor="k")
     ax.add_collection3d(pc)
 
@@ -100,12 +142,11 @@ def plot(mesh_un, fname, folder):
     pyplot.savefig(folder + "/" + fname + '_90_0.png')
 
 
-def get_measurements(mesh_uniq):
+def get_measurements(mesh, name, axis):
     # get (and print) the measurements according to Elsner et al 2010
 
-    print("Measurements: \n")
-    FCW = abs(su.get_extent(mesh_un, 0)[1] - su.get_extent(mesh_un, 0)[0])
-    print("FCW, " + str(FCW))
+    measure = abs(su.get_extent(mesh, axis)[1] - su.get_extent(mesh, axis)[0])
+    print(name + ", " + str(measure))
 
 
 if __name__ == "__main__":
@@ -119,5 +160,3 @@ if __name__ == "__main__":
             mesh_un = su.get_uniq_pc(filename)
             mesh_zeroed = su.reposition(mesh_un)
             plot(mesh_zeroed, filename, folder)
-            get_measurements(mesh_zeroed)
-
