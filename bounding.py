@@ -58,20 +58,31 @@ def plot(mesh_un, fname, folder):
                                         0)
     mesh_right_half = su.get_half_points(mesh_un, 1, su.get_extent(mesh_un, 0),
                                          0)
+    mesh_right_cond = su.get_condyle(mesh_right_half,
+                                     su.get_extent(mesh_right_half, 1),
+                                     0)
 
+    mesh_left_cond = su.get_condyle(mesh_left_half,
+                                    su.get_extent(mesh_left_half, 1),
+                                    1)
     positions = [
         # su.boundingorigin(mesh_un),
         su.boundingorigin(mesh_left_half),
-        su.boundingorigin(mesh_right_half)
+        su.boundingorigin(mesh_right_half),
+        su.boundingorigin(mesh_right_cond),
+        su.boundingorigin(mesh_left_cond)
+
     ]
     sizes = [
         # su.boundingsize(mesh_un),
         su.boundingsize(mesh_left_half),
-        su.boundingsize(mesh_right_half)
+        su.boundingsize(mesh_right_half),
+        su.boundingsize(mesh_right_cond),
+        su.boundingsize(mesh_left_cond)
     ]
-    print("positions = " + str(positions))
-    print("sizes = " + str(sizes))
-    colors = ["crimson", "green"]
+    # print("positions = " + str(positions))
+    # print("sizes = " + str(sizes))
+    colors = ["crimson", "green", "red", "blue"]
     pc = plotCubeAt2(positions, sizes, colors=colors, edgecolor="k")
     ax.add_collection3d(pc)
 
@@ -89,6 +100,14 @@ def plot(mesh_un, fname, folder):
     pyplot.savefig(folder + "/" + fname + '_90_0.png')
 
 
+def get_measurements(mesh_uniq):
+    # get (and print) the measurements according to Elsner et al 2010
+
+    print("Measurements: \n")
+    FCW = abs(su.get_extent(mesh_un, 0)[1] - su.get_extent(mesh_un, 0)[0])
+    print("FCW, " + str(FCW))
+
+
 if __name__ == "__main__":
     os.chdir(sys.argv[1])
     folder = "boundingcube"
@@ -96,5 +115,9 @@ if __name__ == "__main__":
         os.mkdir(sys.argv[1] + "/" + folder)
     for filename in sorted(os.listdir(sys.argv[1])):
         if filename.endswith(".stl"):
+            print(filename)
             mesh_un = su.get_uniq_pc(filename)
-            plot(mesh_un, filename, folder)
+            mesh_zeroed = su.reposition(mesh_un)
+            plot(mesh_zeroed, filename, folder)
+            get_measurements(mesh_zeroed)
+

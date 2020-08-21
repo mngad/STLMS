@@ -2,8 +2,41 @@ from stl import mesh
 import numpy as np
 
 
+def reposition(mesh):
+    # takes the mesh and makes it start at 0, 0, 0 so all mesh positions are
+    # positive
+    #
+
+    x_extent = get_extent(mesh, 0)
+    y_extent = get_extent(mesh, 1)
+    z_extent = get_extent(mesh, 2)
+
+    xmin = min(x_extent)
+    ymin = min(y_extent)
+    zmin = min(z_extent)
+
+    return_array = np.zeros((len(mesh), 3))
+
+    count = 0
+    for i in range(len(mesh)):
+        return_array[count][0] = mesh[i][0] + abs(xmin)
+        count += 1
+
+    count = 0
+    for i in range(len(mesh)):
+        return_array[count][1] = mesh[i][1] + abs(ymin)
+        count += 1
+
+    count = 0
+    for i in range(len(mesh)):
+        return_array[count][2] = mesh[i][2] + abs(zmin)
+        count += 1
+
+    return return_array
+
+
 def get_uniq_pc(fname):
-    #return unique point cloud taking points from each triangle
+    # return unique point cloud taking points from each triangle
 
     fullmesh = mesh.Mesh.from_file(fname)
     allmesh = np.concatenate((fullmesh.v0, fullmesh.v1, fullmesh.v2), axis=0)
@@ -19,7 +52,6 @@ def get_mid_array(mesh_uniq, thickness, axis):
         axisnum = 1
     if axis == 'z' or axis == 'Z':
         axisnum = 2
-
 
     zmin = min(mesh_uniq[:, axisnum])
     zmax = max(mesh_uniq[:, axisnum])
@@ -42,43 +74,49 @@ def get_mid_array(mesh_uniq, thickness, axis):
 
     return midarray
 
-#reurns a list of 2 values, minimum and maximum of an axis
+
 def get_extent(mesh_uniq, axis):
+    # reurns a list of 2 values, minimum and maximum of an axis
+
     extent = []
     extent.append(mesh_uniq[0, axis])
     extent.append(mesh_uniq[0, axis])
 
-
     for i in range(len(mesh_uniq)):
-        if ( mesh_uniq[i,axis] < extent[0]): extent[0] = mesh_uniq[i,axis]
-        if ( mesh_uniq[i,axis] > extent[1]): extent[1] = mesh_uniq[i,axis]
+        if (mesh_uniq[i, axis] < extent[0]):
+            extent[0] = mesh_uniq[i, axis]
+        if (mesh_uniq[i, axis] > extent[1]):
+            extent[1] = mesh_uniq[i, axis]
 
     return extent
 
-#returns origin of cube
+
 def boundingorigin(mesh_un):
+    # returns origin of cube
 
     origin = (get_extent(mesh_un, 0)[0],
-        get_extent(mesh_un, 1)[0],
-        get_extent(mesh_un, 2)[0])
+              get_extent(mesh_un, 1)[0],
+              get_extent(mesh_un, 2)[0])
 
     return origin
 
+
 def boundingsize(mesh_un):
+
     origin = (get_extent(mesh_un, 0)[0],
-        get_extent(mesh_un, 1)[0],
-        get_extent(mesh_un, 2)[0])
+              get_extent(mesh_un, 1)[0],
+              get_extent(mesh_un, 2)[0])
 
     size = (get_extent(mesh_un, 0)[1] - origin[0],
-        get_extent(mesh_un, 1)[1] - origin[1],
-        get_extent(mesh_un, 2)[1] - origin[2])
+            get_extent(mesh_un, 1)[1] - origin[1],
+            get_extent(mesh_un, 2)[1] - origin[2])
 
     return size
 
-#returns mesh points from left or right half
-# which_half = bool of 0 = left, 1 = right
-def get_half_points(mesh_uniq, which_half, extent, axis):
 
+def get_half_points(mesh_uniq, which_half, extent, axis):
+    # returns mesh points from left or right half
+    # which_half = bool of 0 = left, 1 = right
 
     halfway_val = (extent[1] + extent[0]) / 2
 
@@ -106,5 +144,77 @@ def get_half_points(mesh_uniq, which_half, extent, axis):
                 half_mesh_array[count] = mesh_uniq[i]
                 count += 1
 
-
     return half_mesh_array
+
+
+def get_condyle(mesh_uniq, extent_y, half):
+    # Takes half the points (ie. roughly one condyle) measures some percentage
+    # from the back to find the condyle width
+
+    if(half == 0):
+        length = abs(extent_y[1] - extent_y[0])
+        instep_point = (length * 0.15) + extent_y[0]
+
+        a = 0
+
+        for i in range(len(mesh_uniq)):
+            if(mesh_uniq[i, 1] < instep_point):
+                a += 1
+
+        temp_mesh_array = np.zeros((a, 3))
+
+        count = 0
+        for i in range(len(mesh_uniq)):
+            if(mesh_uniq[i, 1] < instep_point):
+                temp_mesh_array[count] = mesh_uniq[i]
+                count += 1
+
+        inside_condyle_bound = get_extent(temp_mesh_array, 0)[0]
+        b = 0
+
+        for i in range(len(mesh_uniq)):
+            if(mesh_uniq[i, 0] > inside_condyle_bound):
+                b += 1
+
+        FW_mesh_array = np.zeros((b, 3))
+
+        count = 0
+        for i in range(len(mesh_uniq)):
+            if(mesh_uniq[i, 0] > inside_condyle_bound):
+                FW_mesh_array[count] = mesh_uniq[i]
+                count += 1
+
+        return FW_mesh_array
+
+    if(half == 1):
+        length = abs(extent_y[1] - extent_y[0])
+        instep_point = (length * 0.15) + extent_y[0]
+        a = 0
+
+        for i in range(len(mesh_uniq)):
+            if(mesh_uniq[i, 1] < instep_point):
+                a += 1
+
+        temp_mesh_array = np.zeros((a, 3))
+
+        count = 0
+        for i in range(len(mesh_uniq)):
+            if(mesh_uniq[i, 1] < instep_point):
+                temp_mesh_array[count] = mesh_uniq[i]
+                count += 1
+        inside_condyle_bound = get_extent(temp_mesh_array, 0)[1]
+        b = 0
+
+        for i in range(len(mesh_uniq)):
+            if(mesh_uniq[i, 0] < inside_condyle_bound):
+                b += 1
+
+        FW_mesh_array = np.zeros((b, 3))
+
+        count = 0
+        for i in range(len(mesh_uniq)):
+            if(mesh_uniq[i, 0] < inside_condyle_bound):
+                FW_mesh_array[count] = mesh_uniq[i]
+                count += 1
+
+        return FW_mesh_array
