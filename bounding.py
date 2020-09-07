@@ -72,6 +72,26 @@ def plot(mesh_un, fname, folder):
         mesh_right_cond, 0)
     mesh_un_thirds = su.split_into_thirds(mesh_un, 1)
 
+    mesh_un_middline = su.get_mid_array(mesh_un, 2, "y")
+    mesh_un_thirds_middline = []
+    for i in mesh_un_thirds:
+        mesh_un_thirds_middline.append(su.get_mid_array(i, 2, "y"))
+
+    mesh_left_cond_thirds_x_middline = []
+    for i in mesh_left_cond_thirds_x:
+        mesh_left_cond_thirds_x_middline.append(su.get_mid_array(i, 2, "x"))
+
+    mesh_left_cond_thirds_middline = []
+    for i in mesh_left_cond_thirds:
+        mesh_left_cond_thirds_middline.append(su.get_mid_array(i, 2, "y"))
+
+    mesh_right_cond_thirds_x_middline = []
+    for i in mesh_right_cond_thirds_x:
+        mesh_right_cond_thirds_x_middline.append(su.get_mid_array(i, 2, "x"))
+
+    mesh_right_cond_thirds_middline = []
+    for i in mesh_right_cond_thirds:
+        mesh_right_cond_thirds_middline.append(su.get_mid_array(i, 2, "y"))
     positions = [
         # su.boundingorigin(mesh_un),
         # su.boundingorigin(mesh_left_half),
@@ -84,12 +104,15 @@ def plot(mesh_un, fname, folder):
         # su.boundingorigin(mesh_right_cond_thirds[0]),
         # su.boundingorigin(mesh_right_cond_thirds[1]),
         # su.boundingorigin(mesh_right_cond_thirds[2]),
-        su.boundingorigin(mesh_left_cond_thirds_x[0]),
-        su.boundingorigin(mesh_left_cond_thirds_x[1]),
-        su.boundingorigin(mesh_left_cond_thirds_x[2]),
-        su.boundingorigin(mesh_right_cond_thirds_x[0]),
-        su.boundingorigin(mesh_right_cond_thirds_x[1]),
-        su.boundingorigin(mesh_right_cond_thirds_x[2])
+        # su.boundingorigin(mesh_left_cond_thirds_x[0]),
+        # su.boundingorigin(mesh_left_cond_thirds_x[1]),
+        # su.boundingorigin(mesh_left_cond_thirds_x[2]),
+        # su.boundingorigin(mesh_right_cond_thirds_x[0]),
+        # su.boundingorigin(mesh_right_cond_thirds_x[1]),
+        # su.boundingorigin(mesh_right_cond_thirds_x[2]),
+        su.boundingorigin(mesh_right_cond_thirds_middline[0]),
+        su.boundingorigin(mesh_right_cond_thirds_middline[1]),
+        su.boundingorigin(mesh_right_cond_thirds_middline[2])
     ]
     sizes = [
         # su.boundingsize(mesh_un),
@@ -103,24 +126,32 @@ def plot(mesh_un, fname, folder):
         # su.boundingsize(mesh_right_cond_thirds[0]),
         # su.boundingsize(mesh_right_cond_thirds[1]),
         # su.boundingsize(mesh_right_cond_thirds[2]),
-        su.boundingsize(mesh_left_cond_thirds_x[0]),
-        su.boundingsize(mesh_left_cond_thirds_x[1]),
-        su.boundingsize(mesh_left_cond_thirds_x[2]),
-        su.boundingsize(mesh_right_cond_thirds_x[0]),
-        su.boundingsize(mesh_right_cond_thirds_x[1]),
-        su.boundingsize(mesh_right_cond_thirds_x[2])
-
+        # su.boundingsize(mesh_left_cond_thirds_x[0]),
+        # su.boundingsize(mesh_left_cond_thirds_x[1]),
+        # su.boundingsize(mesh_left_cond_thirds_x[2]),
+        # su.boundingsize(mesh_right_cond_thirds_x[0]),
+        # su.boundingsize(mesh_right_cond_thirds_x[1]),
+        # su.boundingsize(mesh_right_cond_thirds_x[2])
+        su.boundingsize(mesh_right_cond_thirds_middline[0]),
+        su.boundingsize(mesh_right_cond_thirds_middline[1]),
+        su.boundingsize(mesh_right_cond_thirds_middline[2])
     ]
 
-    get_measurements(mesh_un, "FCW", 0)
-    get_measurements(mesh_un_thirds[2], "FCWA", 0)
-    get_measurements(mesh_un_thirds[0], "FCWP", 0)
-    get_measurements(mesh_right_cond_thirds[1], "FW", 0)
-    get_measurements(mesh_right_cond_thirds[2], "FWA", 0)
-    get_measurements(mesh_right_cond_thirds[0], "FWP", 0)
-    get_measurements(mesh_right_cond_thirds_x[1], "FL", 1)
-    get_measurements(mesh_right_cond_thirds_x[2], "FLM", 1)
-    get_measurements(mesh_right_cond_thirds_x[0], "FLL", 1)
+    get_measurements(mesh_un_middline, "FCW", 0)
+    get_measurements(mesh_un_thirds_middline[2], "FCWA", 0)
+    get_measurements(mesh_un_thirds_middline[0], "FCWP", 0)
+    get_measurements(mesh_left_cond_thirds_middline[1],    "Left FW", 0)
+    get_measurements(mesh_left_cond_thirds_middline[2],    "Left FWA", 0)
+    get_measurements(mesh_left_cond_thirds_middline[0],    "Left FWP", 0)
+    get_measurements(mesh_left_cond_thirds_x_middline[1],  "Left FL", 1)
+    get_measurements(mesh_left_cond_thirds_x_middline[2],  "Left FLM", 1)
+    get_measurements(mesh_left_cond_thirds_x_middline[0],  "Left FLL", 1)
+    get_measurements(mesh_right_cond_thirds_middline[1],   "Right FW", 0)
+    get_measurements(mesh_right_cond_thirds_middline[2],   "Right FWA", 0)
+    get_measurements(mesh_right_cond_thirds_middline[0],   "Right FWP", 0)
+    get_measurements(mesh_right_cond_thirds_x_middline[1], "Right FL", 1)
+    get_measurements(mesh_right_cond_thirds_x_middline[2], "Right FLM", 1)
+    get_measurements(mesh_right_cond_thirds_x_middline[0], "Right FLL", 1)
 
     # print("positions = " + str(positions))
     # print("sizes = " + str(sizes))
