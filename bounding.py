@@ -225,13 +225,10 @@ def export_to_csv(stl_name, folder, string):
 
 if __name__ == "__main__":
     os.chdir(sys.argv[1])
-    folder = "boundingcube"
-    if folder not in os.listdir(sys.argv[1]):
-        os.mkdir(sys.argv[1] + "/" + folder)
     for filename in sorted(os.listdir(sys.argv[1])):
         if filename.endswith(".stl"):
             print(filename)
             mesh_un = su.get_uniq_pc(filename)
             mesh_zeroed = su.reposition(mesh_un)
             # plot(mesh_zeroed, filename, folder)
-            get_mesh_parts(mesh_zeroed, filename, folder)
+            get_mesh_parts(mesh_zeroed, filename, sys.argv[1])
